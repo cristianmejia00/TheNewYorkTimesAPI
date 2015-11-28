@@ -1,7 +1,7 @@
-#This code retrieves news from The New York Times
+#This code retrieves news metadat from The New York Times
 #And save the search results as a .csv file
-#20151109
 
+#Created 20151109
 #####################################################################
 #Install the library...
 #install.packages("rtimes") 
@@ -20,13 +20,13 @@
 
 ####################################################################
 #The New York Times API downloads 10 articles per page.
-#By default it will retrieve results of page 1
+#By default each call to the API will retrieve results of page 1
 #The maximum number of pages available is 100 pages (1000 articles) for a given query
 #So that, if your query is too broad you wont be able to download all the information
 
-#You need to limit the call of your query. In this code I manually adjust 
-#the begining and end date to always get less than 100 pages each time I run
-#the code. 
+#You need to limit the call of your query to have less than 100 pages (= 1000 news articles).
+#To do so, In this code I manually adjust the begining and end date to always 
+#get less than 100 pages each time I run the code. 
 
 #Once you get the first 100 pages, manually change the begining and end dates 
 #to get another bunch of pages, and so on, until you are satisfied.
@@ -77,7 +77,7 @@ articles <- lapply((1:pages), function(x) {
   return(data)})
 
 #Process data
-#This convert the obtained values to a data frame
+#This convert the obtained values to data frame
 rows <- list(0) #Initial empty value for a an empty list
 for (i in 1:pages) {
   list_of_values <-  lapply((1:length(articles[[i]])), function(y) {
@@ -112,9 +112,8 @@ rows <- rows[-1] #Removes the initial empty value
 dfs <- lapply(rows, function(x) data.frame(as.list(x),stringsAsFactors = F))
 dfs2<- rbind.fill(dfs) #merge all together
 
-#Write the file
+#Write file
 write.csv(dfs2, file = name, row.names = F)
 
 getwd()
-
 
