@@ -77,15 +77,17 @@ articles <- lapply((1:pages), function(x) {
   return(data)})
 
 #Process data
-#This convert the obtained values to data frame
+#This convert the obtained values to a data frame
 rows <- list(0) #Initial empty value for a an empty list
 for (i in 1:pages) {
   list_of_values <-  lapply((1:length(articles[[i]])), function(y) {
     n <- articles[[i]][[y]]
-    keywords <- paste(sapply ((1:length(n$keyword)), function(x) {
-      n$keywords[[x]]$value}), collapse = " | ")
-    keywords_type <- paste(sapply ((1:length(n$keyword)), function(x) {
-      n$keywords[[x]]$name}), collapse = " | ")
+    keywords <- keywords_type <- " "
+    if (length(n$keywords) > 0) {
+      keywords <- paste(sapply ((1:length(n$keyword)), function(x) {
+        n$keywords[[x]]$value}), collapse = " | ")
+      keywords_type <- paste(sapply ((1:length(n$keyword)), function(x) {
+        n$keywords[[x]]$name}), collapse = " | ")}
     return (c("id" = n$"_id",
               "headline_main" = n$headline$main,
               "headline_print" = n$headline$print_headline,
