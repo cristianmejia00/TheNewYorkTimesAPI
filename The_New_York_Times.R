@@ -1,42 +1,38 @@
-#This code retrieves news metadat from The New York Times
-#And save the search results as a .csv file
+# Retrieves news metadata from The New York Times
+# Results will be save as .csv file
 
-#Created 20151109
+# Created 20151109
 #####################################################################
-#Install the library...
-#install.packages("rtimes") 
+# install the library...
+# install.packages("rtimes") 
 
-#to see all parameters in the library...
-?as_search
+# Check parameters: ?as_search
 
-#To see all parameters from The New York Times
-#http://developer.nytimes.com/docs/read/article_search_api_v2
+# API documentation
+# http://developer.nytimes.com/docs/read/article_search_api_v2
 
-#To get to know the original interface:
-#http://developer.nytimes.com/io-docs
+# Get your own API key in http://developer.nytimes.com/
 
-#Plase use your own API. You can get one here:
-#http://developer.nytimes.com/
+#################################################################### 
+# Aobout the API
+# The New York Times API downloads 10 articles per page.
+# By default each call to the API will retrieve results of page 1
+# The maximum number of pages available is 100 pages (1000 articles) for a given query
+# So that, if your query is too broad you wont be able to get all the information
 
-####################################################################
-#The New York Times API downloads 10 articles per page.
-#By default each call to the API will retrieve results of page 1
-#The maximum number of pages available is 100 pages (1000 articles) for a given query
-#So that, if your query is too broad you wont be able to download all the information
+# You need to limit the call of your query to have less than 100 pages (= 1000 news articles).
+# To do so, In this code I manually adjust the begining and end date to always 
+# get less than 100 pages each time I run the code. 
 
-#You need to limit the call of your query to have less than 100 pages (= 1000 news articles).
-#To do so, In this code I manually adjust the begining and end date to always 
-#get less than 100 pages each time I run the code. 
-
-#Once you get the first 100 pages, manually change the begining and end dates 
-#to get another bunch of pages, and so on, until you are satisfied.
+# Once you get the first 100 pages, manually change the begining and end dates 
+# to get another bunch of pages, and so on, until you are satisfied.
 ###################################################################
-#Call libraries
+# Call libraries
 library(rtimes)
 library(plyr)
 
-#Set parameters
-name = "Japan_NYT_2010.csv" #Write the name of the output file, always put .csv
+# Set parameters
+output_name = "Japan_NYT_2010.csv" #Write the name of the output file, always put .csv
 
 key = "" #Insert your API personal key here, get one: http://developer.nytimes.com/
 q = "Japan"  #Query
@@ -48,7 +44,7 @@ begin_date <- "20100101"
 end_date <- "20101231"
 sort <- "oldest"
 
-#Helper function to search by number of page
+# Helper function to search by number of page
 search_by_page <- function(pag) { 
   as_search(key = key, 
             q = q,
@@ -62,22 +58,22 @@ search_by_page <- function(pag) {
             #"news_Desk","type_of_material")
 }
 
-#First running to know the number of articles in your query
+# First running to know the number of articles in your query
 output1 <- search_by_page(1) 
 
-#Calculate the number of pages
-#If you get more than 100, limit the query!!
+# Calculate the number of pages
+# If you get more than 100, limit the query!!
 pages <- as.numeric(floor(output1$meta["hits"]/10))
 pages
 
-#Get data
+# Get data
 articles <- lapply((1:pages), function(x) {
   search <- search_by_page(x)
   data <- search$data
   return(data)})
 
-#Process data
-#This convert the obtained values to a data frame
+# Process data
+# This convert the obtained values to a data frame
 rows <- list(0) #Initial empty value for a an empty list
 for (i in 1:pages) {
   list_of_values <-  lapply((1:length(articles[[i]])), function(y) {
@@ -114,8 +110,6 @@ rows <- rows[-1] #Removes the initial empty value
 dfs <- lapply(rows, function(x) data.frame(as.list(x),stringsAsFactors = F))
 dfs2<- rbind.fill(dfs) #merge all together
 
-#Write file
+# Write file
 write.csv(dfs2, file = name, row.names = F)
-
 getwd()
-
