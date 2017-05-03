@@ -1,5 +1,5 @@
 # Retrieves news metadata from The New York Times
-# Results will be save as .csv file
+# Results will be saved as .csv file
 
 # Created 20151109
 #####################################################################
